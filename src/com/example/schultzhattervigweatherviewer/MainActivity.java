@@ -5,15 +5,19 @@ import android.app.Activity;
 import android.text.TextUtils;
 import android.view.Menu;
 
-public class MainActivity extends Activity {
-	    
+public class MainActivity extends Activity implements IListeners{
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_main);
+            Forecast forecast = new Forecast();
+            Forecast.LoadForecast loadedForecast = forecast.new LoadForecast(this, this);
+            loadedForecast.execute("Hello");
             
+            //forecast.
             // Get City array from resources.
             //_citiesArray = getResources().getStringArray(R.array.cityArray);
 
@@ -40,6 +44,18 @@ public class MainActivity extends Activity {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
+	}
+
+	@Override
+	public void onLocationLoaded(ForecastLocation forecastLocation) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onForecastLoaded(Forecast forecast) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

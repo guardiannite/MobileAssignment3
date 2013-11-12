@@ -16,7 +16,7 @@ import android.os.Parcelable;
 import android.text.format.DateUtils;
 import android.util.JsonReader;
 import android.util.Log;
-//import edu.sdsmt.cs492.assignment3.weatherapp.IListeners;
+
 
 public class Forecast implements Parcelable
 {
@@ -25,9 +25,12 @@ public class Forecast implements Parcelable
         
         // http://developer.weatherbug.com/docs/read/WeatherBug_API_JSON
         // NOTE:  See example JSON in doc folder.
-        private String _URL = "http://i.wxbug.net/REST/Direct/GetForecastHourly.ashx?zip=" + "%s" + 
-                              "&ht=t&ht=i&ht=cp&ht=fl&ht=h" + 
-                              "&api_key=q3wj56tqghv7ybd8dy6gg4e7";
+        //private String _URL = "http://i.wxbug.net/REST/Direct/GetForecastHourly.ashx?zip=" + "%s" + 
+                              //"&ht=t&ht=i&ht=cp&ht=fl&ht=h" + 
+                              //"&api_key=g5ag6gquyxh7czgfb4bj6b4b";
+        private String _URL = "http://i.wxbug.net/REST/Direct/GetForecastHourly.ashx?zip=" + "57701" + 
+        					  "&ht=t&ht=i&ht=cp&ht=fl&ht=h" + 
+        					  "&api_key=g5ag6gquyxh7czgfb4bj6b4b";
         
         // http://developer.weatherbug.com/docs/read/List_of_Icons
                 
@@ -95,7 +98,36 @@ public class Forecast implements Parcelable
                                 //                 URL
                                 //       InputStreamReader
                                 //       JsonReader
+                        	URL url = new URL(_URL);
+                        	InputStreamReader reader = new InputStreamReader( url.openStream());
+                        	JsonReader jsonReader = new JsonReader(reader);
+                        	jsonReader.beginObject();
+                        	
+                        	String name = jsonReader.nextName();
+                        	if(name.equals("forecastHourlyList"))
+                        	{
+                        		jsonReader.beginArray();
 
+                        		jsonReader.beginObject();
+                        		while(jsonReader.hasNext())
+                        		{
+                        			name = jsonReader.nextName();
+                        			while(jsonReader.peek() == null)
+                        			{
+                        				jsonReader.skipValue();
+                        				name = jsonReader.nextName();
+                        			}
+                        			String next = jsonReader.nextString();
+                        			if(name != null)
+                        			{
+                        				Log.d(TAG, jsonReader.nextName());
+                        			}
+                        			if(next != null)
+                        			{
+                        				Log.d(TAG, jsonReader.nextString());
+                        			}
+                        		}
+                        	}
                         }
                         catch (IllegalStateException e)
                         {
