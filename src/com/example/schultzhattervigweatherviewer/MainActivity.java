@@ -9,7 +9,7 @@ import android.util.Log;
 import android.view.Menu;
 
 
-public class MainActivity extends Activity implements IListeners{
+public class MainActivity extends Activity{
 	
 	private final String TAG = "MAIN_ACTIVITY";
 	private FragmentManager _fragmentManager;
@@ -31,7 +31,7 @@ public class MainActivity extends Activity implements IListeners{
             	_fragmentForecast = new FragmentForecast();
             }
             
-            _fragmentManager.beginTransaction().replace(R.id.fragmentContainerFrame, _fragmentForecast, FRAGMENT_FORECAST_TAG ).commit();
+            //_fragmentManager.beginTransaction().replace(R.id.fragmentContainerFrame, _fragmentForecast, FRAGMENT_FORECAST_TAG ).commit();
             
             showForecast("57701");
             
@@ -39,54 +39,13 @@ public class MainActivity extends Activity implements IListeners{
 
     private void showForecast(String zipCode)
     {    	
-        Forecast forecast = new Forecast();
-        Forecast.LoadForecast loadedForecast = forecast.new LoadForecast(this, this);
-        loadedForecast.execute("57701");
-        
-        Log.d(TAG, "Hello There!");
-        
-        //ForecastLocation forecastLocation = new ForecastLocation();
-        //ForecastLocation.LoadLocation loadedLocation = forecastLocation.new LoadLocation(this, this);
-        //loadedLocation.execute("57701");
-        
-        //All of these will be null since forecast executes async
-        //Log.d(TAG, forecast.getChancePrecip());
-        //Log.d(TAG, forecast.getFeelsLike());
-        //Log.d(TAG, forecast.getHumidity());
-        //Log.d(TAG, forecast.getTemperature());
-        Log.d(TAG, "Hello There! (again)");
-        
     	Bundle bundle = new Bundle();
-    	bundle.putString("KEY", "Hello");
-        //Parcelable parcelable = forecast;
-        //bundle.putParcelable(FragmentForecast.FORECAST_KEY, parcelable);
-        
+    	bundle.putString(FragmentForecast.FORECAST_KEY, zipCode);
+    	bundle.putString(_fragmentForecast.LOCATION_KEY, zipCode);
+    	
         _fragmentForecast.setArguments(bundle);  //Must set arguments before fragmentManager.beginTransaction()
         
         _fragmentManager.beginTransaction().replace(R.id.fragmentContainerFrame, _fragmentForecast, FRAGMENT_FORECAST_TAG ).commit();
     }
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
-	}
-
-	@Override
-	public void onLocationLoaded(ForecastLocation forecastLocation) 
-	{
-		_fragmentForecast.updateLocation(forecastLocation);
-	}
-
-	@Override
-	public void onForecastLoaded(Forecast forecast) 
-	{
-        Log.d(TAG, forecast.getChancePrecip());
-        Log.d(TAG, forecast.getFeelsLike());
-        Log.d(TAG, forecast.getHumidity());
-        Log.d(TAG, forecast.getTemperature());
-		_fragmentForecast.updateForecast(forecast);
-	}
 
 }
