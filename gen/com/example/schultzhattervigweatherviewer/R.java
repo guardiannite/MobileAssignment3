@@ -25,8 +25,8 @@ public final class R {
     }
     public static final class id {
         public static final int action_settings=0x7f080012;
+        public static final int fragmentContainerFrame=0x7f080000;
         public static final int imageForecast=0x7f080003;
-        public static final int imageForecast2=0x7f080000;
         public static final int labelAsOfTime=0x7f08000d;
         public static final int labelChanceOfPrecip=0x7f08000b;
         public static final int labelFeelsLikeTemp=0x7f080007;

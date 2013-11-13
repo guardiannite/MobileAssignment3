@@ -34,6 +34,13 @@ public class Forecast implements Parcelable
         private static final String TEMPERATURE = "temperature";
         private static final String DATE_TIME = "dateTime";
         
+        //TODO: Change to longs OR add labels (%, F, etc.)
+        private String _chancePrecip;
+        private String _feelsLike;
+        private String _humidity;
+        private String _temperature;
+        private String _time;
+        
         // http://developer.weatherbug.com/docs/read/WeatherBug_API_JSON
         // NOTE:  See example JSON in doc folder.
         private String _URL = "http://i.wxbug.net/REST/Direct/GetForecastHourly.ashx?zip=" + "%s" + 
@@ -46,6 +53,7 @@ public class Forecast implements Parcelable
         
         public Bitmap Image;
         
+        
         public Forecast()
         {
                 Image = null;
@@ -54,6 +62,11 @@ public class Forecast implements Parcelable
         private Forecast(Parcel parcel)
         {
                 Image = parcel.readParcelable(Bitmap.class.getClassLoader());
+                _chancePrecip = parcel.readString();
+                _feelsLike = parcel.readString();
+                _humidity = parcel.readString();
+                _temperature = parcel.readString();
+                //TODO: Add time
         }
 
         @Override
@@ -66,6 +79,11 @@ public class Forecast implements Parcelable
         public void writeToParcel(Parcel dest, int flags)
         {
                 dest.writeParcelable(Image, 0);
+                dest.writeString(_chancePrecip);
+                dest.writeString(_feelsLike);
+                dest.writeString(_humidity);
+                dest.writeString(_temperature);
+                //TODO: dest.writeString(_time);
         }
 
         public static final Parcelable.Creator<Forecast> Creator = new Parcelable.Creator<Forecast>()
@@ -82,7 +100,56 @@ public class Forecast implements Parcelable
                         return new Forecast[size];
                 }
         };
+        
+        public String getChancePrecip()
+        {
+        	return _chancePrecip;
+        }
+        
+        public String getFeelsLike()
+        {
+        	return _feelsLike;
+        }
+        
+        public String getHumidity()
+        {
+        	return _humidity;
+        }
+        
+        public String getTemperature()
+        {
+        	return _temperature;
+        }
+        
+        public String getTime()
+        {
+        	return _time;
+        }
+        
+        public void setChancePrecip(String chancePrecip)
+        {
+        	_chancePrecip = chancePrecip;
+        }
 
+        public void setFeelsLike(String feelsLike)
+        {
+        	_feelsLike = feelsLike;
+        }
+        
+        public void setHumidity(String humidity)
+        {
+        	_humidity = humidity;
+        }
+        
+        public void setTemperature(String temperature)
+        {
+        	_temperature = temperature;
+        }
+        
+        public void setTime(String time)
+        {
+        	_time = time;
+        }
         //Parameters -> strings  = Zip Code
         //Progress -> Void
         //Result -> Forecast
@@ -102,13 +169,18 @@ public class Forecast implements Parcelable
                 protected Forecast doInBackground(String... params)
                 {
                         Forecast forecast = new Forecast();
+                        Log.d(TAG, "Starting url call...");
                         
                         try
                         {
+                        	Log.d(TAG, String.format(_URL, params[0]));
+                        	
                         	URL url = new URL(String.format(_URL, params[0]));
                         	InputStreamReader reader = new InputStreamReader( url.openStream());
                         	JsonReader jsonReader = new JsonReader(reader);
                         	jsonReader.beginObject();
+                        	
+                        	Log.d(TAG, "Started parsing JSON");
                         	
                         	String name = jsonReader.nextName();
                         	if(name.equals(FORECAST_HOURLY_LIST))
@@ -126,23 +198,23 @@ public class Forecast implements Parcelable
                         			}
                         			else if(name.equals(CHANCE_PRECIP))
                         			{
-                        				String chancePrecip = jsonReader.nextString();
-                        				Log.d(TAG, "Chance of precipitation: " + chancePrecip + "%");
+                        				forecast.setChancePrecip( jsonReader.nextString() );
+                        				Log.d(TAG, "Chance of precipitation: " + forecast.getChancePrecip() + "%");
                         			}
                         			else if(name.equals(FEELS_LIKE))
                         			{
-                        				String feelsLike = jsonReader.nextString();
-                        				Log.d(TAG, "Feels like " + feelsLike + "F");
+                        				forecast.setFeelsLike( jsonReader.nextString() );
+                        				Log.d(TAG, "Feels like " + forecast.getFeelsLike() + "F");
                         			}
                         			else if(name.equals(HUMIDITY))
                         			{
-                        				String humidity = jsonReader.nextString();
-                        				Log.d(TAG, "Humidity " + humidity + "%");
+                        				forecast.setHumidity( jsonReader.nextString() );
+                        				Log.d(TAG, "Humidity " + forecast.getHumidity() + "%");
                         			}
                         			else if(name.equals(TEMPERATURE))
                         			{
-                        				String temperature = jsonReader.nextString();
-                        				Log.d(TAG, "Temperature " + temperature + "F");
+                        				forecast.setTemperature( jsonReader.nextString() );
+                        				Log.d(TAG, "Temperature " + forecast.getTemperature() + "F");
                         			}
                         			else if(name.equals(DATE_TIME))
                         			{
@@ -151,6 +223,7 @@ public class Forecast implements Parcelable
                         				//Calendar.HOUR_OF_DAY
                         				long value = jsonReader.nextLong();
                         				date.setTime(value);
+                        				//_time = date.getHours();
                         				Log.d(TAG, "Time: " + value);
                         				Log.d(TAG, "Time: " + date.getTime());
                         				Log.d(TAG, "Time: " + date.getHours());
@@ -159,7 +232,7 @@ public class Forecast implements Parcelable
                         			{
                         				String icon = jsonReader.nextString();
                         				Log.d(TAG, "Icon name: " + icon);
-                        				forecast.Image = readIconBitmap(icon, 1);
+                        				forecast.Image = readIconBitmap(icon, bitmapSampleSize);
                         			}
                         			else
                         			{
@@ -190,6 +263,7 @@ public class Forecast implements Parcelable
                         _listener.onForecastLoaded(forecast);
                 }
 
+                //Written by Brian, takes icon name, makes a call to get the bitmap associated with the name
                 private Bitmap readIconBitmap(String conditionString, int bitmapSampleSize)
                 {
                         Bitmap iconBitmap = null;
@@ -200,6 +274,10 @@ public class Forecast implements Parcelable
                                 BitmapFactory.Options options = new BitmapFactory.Options();
                                 if (bitmapSampleSize != -1)
                                 {
+                                		//Determines if the bitmap should be scaled
+                                		//<= 1 means the original width and height
+                                		//2 means 1/2 the original width and height
+                                		//4 means 1/4 the original width and height, etc.
                                         options.inSampleSize = bitmapSampleSize;
                                 }
 

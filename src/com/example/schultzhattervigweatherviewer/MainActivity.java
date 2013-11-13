@@ -1,42 +1,69 @@
 package com.example.schultzhattervigweatherviewer;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 
-public class MainActivity extends Activity implements IListeners{
 
+public class MainActivity extends Activity implements IListeners{
+	
+	private final String TAG = "MAIN_ACTIVITY";
+	private FragmentManager _fragmentManager;
+	private FragmentForecast _fragmentForecast;
+	private final String FRAGMENT_FORECAST_TAG = "ForecastTag";
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_main);
-            Forecast forecast = new Forecast();
-            Forecast.LoadForecast loadedForecast = forecast.new LoadForecast(this, this);
-            loadedForecast.execute("Hello");
-            
-            //forecast.
-            // Get City array from resources.
-            //_citiesArray = getResources().getStringArray(R.array.cityArray);
 
-            // By default, first element is "favorite" city, go get location.
-            // TextUtils.split() takes a regular expression and in the case
-            // of a pipe delimiter, it needs to be escaped.
-            //showForecast(TextUtils.split(_citiesArray[0], "\\|")[0]);
+            _fragmentManager = getFragmentManager();
+            
+            //Instantiate _fragmentForecast
+            _fragmentForecast = (FragmentForecast) _fragmentManager.findFragmentByTag(FRAGMENT_FORECAST_TAG);
+            if (_fragmentForecast == null)
+            {
+            	_fragmentForecast = new FragmentForecast();
+            }
+            
+            _fragmentManager.beginTransaction().replace(R.id.fragmentContainerFrame, _fragmentForecast, FRAGMENT_FORECAST_TAG ).commit();
+            
+            showForecast("57701");
+            
     }
 
     private void showForecast(String zipCode)
-    {
-            // HINT: Use bundle to pass arguments to fragment.
-            //
-            //                Bundle bundle = new Bundle();
-            //                bundle.putString("key", "value");
-            //                ForecastFragment.setArguments(bundle);
-            
-            // HINT: FragmentManager().beginTransaction()
-            
+    {    	
+        Forecast forecast = new Forecast();
+        Forecast.LoadForecast loadedForecast = forecast.new LoadForecast(this, this);
+        loadedForecast.execute("57701");
+        
+        Log.d(TAG, "Hello There!");
+        
+        //ForecastLocation forecastLocation = new ForecastLocation();
+        //ForecastLocation.LoadLocation loadedLocation = forecastLocation.new LoadLocation(this, this);
+        //loadedLocation.execute("57701");
+        
+        //All of these will be null since forecast executes async
+        //Log.d(TAG, forecast.getChancePrecip());
+        //Log.d(TAG, forecast.getFeelsLike());
+        //Log.d(TAG, forecast.getHumidity());
+        //Log.d(TAG, forecast.getTemperature());
+        Log.d(TAG, "Hello There! (again)");
+        
+    	Bundle bundle = new Bundle();
+    	bundle.putString("KEY", "Hello");
+        //Parcelable parcelable = forecast;
+        //bundle.putParcelable(FragmentForecast.FORECAST_KEY, parcelable);
+        
+        _fragmentForecast.setArguments(bundle);  //Must set arguments before fragmentManager.beginTransaction()
+        
+        _fragmentManager.beginTransaction().replace(R.id.fragmentContainerFrame, _fragmentForecast, FRAGMENT_FORECAST_TAG ).commit();
     }
 
 	@Override
@@ -47,15 +74,19 @@ public class MainActivity extends Activity implements IListeners{
 	}
 
 	@Override
-	public void onLocationLoaded(ForecastLocation forecastLocation) {
-		// TODO Auto-generated method stub
-		
+	public void onLocationLoaded(ForecastLocation forecastLocation) 
+	{
+		_fragmentForecast.updateLocation(forecastLocation);
 	}
 
 	@Override
-	public void onForecastLoaded(Forecast forecast) {
-		// TODO Auto-generated method stub
-		
+	public void onForecastLoaded(Forecast forecast) 
+	{
+        Log.d(TAG, forecast.getChancePrecip());
+        Log.d(TAG, forecast.getFeelsLike());
+        Log.d(TAG, forecast.getHumidity());
+        Log.d(TAG, forecast.getTemperature());
+		_fragmentForecast.updateForecast(forecast);
 	}
 
 }
