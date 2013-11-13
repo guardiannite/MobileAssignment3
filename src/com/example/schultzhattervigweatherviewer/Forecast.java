@@ -6,6 +6,10 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -22,13 +26,17 @@ public class Forecast implements Parcelable
 {
 
         private static final String TAG = "";
+        private static final String CHANCE_PRECIP = "chancePrecip";
+        private static final String ICON = "icon";
+        private static final String FORECAST_HOURLY_LIST = "forecastHourlyList";
+        private static final String FEELS_LIKE = "feelsLike";
+        private static final String HUMIDITY = "humidity";
+        private static final String TEMPERATURE = "temperature";
+        private static final String DATE_TIME = "dateTime";
         
         // http://developer.weatherbug.com/docs/read/WeatherBug_API_JSON
         // NOTE:  See example JSON in doc folder.
-        //private String _URL = "http://i.wxbug.net/REST/Direct/GetForecastHourly.ashx?zip=" + "%s" + 
-                              //"&ht=t&ht=i&ht=cp&ht=fl&ht=h" + 
-                              //"&api_key=g5ag6gquyxh7czgfb4bj6b4b";
-        private String _URL = "http://i.wxbug.net/REST/Direct/GetForecastHourly.ashx?zip=" + "57701" + 
+        private String _URL = "http://i.wxbug.net/REST/Direct/GetForecastHourly.ashx?zip=" + "%s" + 
         					  "&ht=t&ht=i&ht=cp&ht=fl&ht=h" + 
         					  "&api_key=g5ag6gquyxh7czgfb4bj6b4b";
         
@@ -75,6 +83,9 @@ public class Forecast implements Parcelable
                 }
         };
 
+        //Parameters -> strings  = Zip Code
+        //Progress -> Void
+        //Result -> Forecast
         public class LoadForecast extends AsyncTask<String, Void, Forecast>
         {
                 private IListeners _listener;
@@ -90,44 +101,76 @@ public class Forecast implements Parcelable
 
                 protected Forecast doInBackground(String... params)
                 {
-                        Forecast forecast = null;
-
+                        Forecast forecast = new Forecast();
+                        
                         try
                         {
-                                // HINT: You will use the following classes to make API call.
-                                //                 URL
-                                //       InputStreamReader
-                                //       JsonReader
-                        	URL url = new URL(_URL);
+                        	URL url = new URL(String.format(_URL, params[0]));
                         	InputStreamReader reader = new InputStreamReader( url.openStream());
                         	JsonReader jsonReader = new JsonReader(reader);
                         	jsonReader.beginObject();
                         	
                         	String name = jsonReader.nextName();
-                        	if(name.equals("forecastHourlyList"))
+                        	if(name.equals(FORECAST_HOURLY_LIST))
                         	{
                         		jsonReader.beginArray();
 
                         		jsonReader.beginObject();
                         		while(jsonReader.hasNext())
                         		{
+                        			
                         			name = jsonReader.nextName();
-                        			while(jsonReader.peek() == null)
+                        			if(jsonReader.peek() == null)
                         			{
                         				jsonReader.skipValue();
-                        				name = jsonReader.nextName();
                         			}
-                        			String next = jsonReader.nextString();
-                        			if(name != null)
+                        			else if(name.equals(CHANCE_PRECIP))
                         			{
-                        				Log.d(TAG, jsonReader.nextName());
+                        				String chancePrecip = jsonReader.nextString();
+                        				Log.d(TAG, "Chance of precipitation: " + chancePrecip + "%");
                         			}
-                        			if(next != null)
+                        			else if(name.equals(FEELS_LIKE))
                         			{
-                        				Log.d(TAG, jsonReader.nextString());
+                        				String feelsLike = jsonReader.nextString();
+                        				Log.d(TAG, "Feels like " + feelsLike + "F");
                         			}
+                        			else if(name.equals(HUMIDITY))
+                        			{
+                        				String humidity = jsonReader.nextString();
+                        				Log.d(TAG, "Humidity " + humidity + "%");
+                        			}
+                        			else if(name.equals(TEMPERATURE))
+                        			{
+                        				String temperature = jsonReader.nextString();
+                        				Log.d(TAG, "Temperature " + temperature + "F");
+                        			}
+                        			else if(name.equals(DATE_TIME))
+                        			{
+                        				Date date = new Date();
+                        				//date.setTime(jsonReader.nextLong());
+                        				//Calendar.HOUR_OF_DAY
+                        				long value = jsonReader.nextLong();
+                        				date.setTime(value);
+                        				Log.d(TAG, "Time: " + value);
+                        				Log.d(TAG, "Time: " + date.getTime());
+                        				Log.d(TAG, "Time: " + date.getHours());
+                        			}
+                        			else if(name.equals(ICON))
+                        			{
+                        				String icon = jsonReader.nextString();
+                        				Log.d(TAG, "Icon name: " + icon);
+                        				forecast.Image = readIconBitmap(icon, 1);
+                        			}
+                        			else
+                        			{
+                        				jsonReader.skipValue();
+                        			}
+
                         		}
+                        		jsonReader.endObject();
+                        		jsonReader.close();
                         	}
+                        	
                         }
                         catch (IllegalStateException e)
                         {
@@ -141,6 +184,7 @@ public class Forecast implements Parcelable
                         return forecast;
                 }
 
+                @Override
                 protected void onPostExecute(Forecast forecast)
                 {
                         _listener.onForecastLoaded(forecast);
