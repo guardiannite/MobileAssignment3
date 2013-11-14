@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -15,9 +17,12 @@ import java.util.TimeZone;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.format.DateFormat;
 import android.text.format.DateUtils;
 import android.util.JsonReader;
 import android.util.Log;
@@ -34,6 +39,7 @@ public class Forecast implements Parcelable
         private static final String HUMIDITY = "humidity";
         private static final String TEMPERATURE = "temperature";
         private static final String DATE_TIME = "dateTime";
+        private final int TIMEOUT = 5000;  //number of millisecond timeout
         
         //TODO: Change to longs OR add labels (%, F, etc.)
         private String _chancePrecip;
@@ -173,12 +179,18 @@ public class Forecast implements Parcelable
                         Forecast forecast = new Forecast();
                         Log.d(TAG, "Starting url call...");
                         
+                        
+                        
                         try
                         {
                         	Log.d(TAG, String.format(_URL, params[0]));
                         	
                         	URL url = new URL(String.format(_URL, params[0]));
-                        	InputStreamReader reader = new InputStreamReader( url.openStream());
+                        	URLConnection connection = url.openConnection();
+                        	connection.setConnectTimeout(TIMEOUT);
+                        	connection.setReadTimeout(TIMEOUT);
+                        	InputStreamReader reader = new InputStreamReader(connection.getInputStream());
+                        	//InputStreamReader reader = new InputStreamReader( url.openStream());
                         	JsonReader jsonReader = new JsonReader(reader);
                         	jsonReader.beginObject();
                         	
@@ -228,12 +240,15 @@ public class Forecast implements Parcelable
                         				//Log.d(TAG, "Offset: " + String.valueOf(offsetHour));
                         				//TimeZone timezoneOffset = TimeZone.getTimeZone("GMT+" + String.valueOf(offsetHour));
                         				//Log.d(TAG, "TimeZone with offset: " + timezoneOffset.getDisplayName());
-                        				long localDeviceTime = Calendar.getInstance().getTimeInMillis();
-                        				
-                        				TimeZone timezone = Calendar.getInstance().getTimeZone();
-                        				Log.d(TAG, "Timezone: " + timezone.getDisplayName());
-                        				Log.d(TAG, "Current device time: " + new SimpleDateFormat(" MMM d 'at' hh:mm a").format(localDeviceTime));
-                        				forecast.setTime( new SimpleDateFormat(" MMM d 'at' hh:mm a").format(localZipCodeTime) );
+                        				//long localDeviceTime = Calendar.getInstance().getTimeInMillis();
+                        				Date date = new Date(localZipCodeTime);  
+                        				SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM d, h:mm a", Locale.US);
+                        				dateFormat.setTimeZone(TimeZone.getTimeZone("gmt"));
+                        				forecast.setTime(dateFormat.format(date));
+                        				//TimeZone timezone = Calendar.getInstance().getTimeZone();
+                        				//Log.d(TAG, "Timezone: " + timezone.getDisplayName());
+                        				//Log.d(TAG, "Current device time: " + new SimpleDateFormat(" MMM d 'at' hh:mm a").format(localDeviceTime));
+                        				//forecast.setTime( new SimpleDateFormat(" MMM d 'at' hh:mm a").format(localZipCodeTime) );
 
                         				Log.d(TAG, "Time: " + forecast.getTime());
                         			}
@@ -257,6 +272,12 @@ public class Forecast implements Parcelable
                         catch (IllegalStateException e)
                         {
                                 Log.e(TAG, e.toString() + params[0]);
+                        }
+                        catch(SocketTimeoutException e)
+                        {
+                        	Log.e(TAG, e.toString());
+                        	Log.e(TAG, "More than " + String.valueOf(TIMEOUT) + " milliseconds passed in getting the forecast.");
+                        	return null;
                         }
                         catch (Exception e)
                         {
@@ -307,5 +328,6 @@ public class Forecast implements Parcelable
 
                         return iconBitmap;
                 }
+                
         }
 }

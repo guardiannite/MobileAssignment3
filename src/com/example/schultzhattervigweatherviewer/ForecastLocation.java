@@ -3,7 +3,9 @@ package com.example.schultzhattervigweatherviewer;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.net.URLConnection;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -18,6 +20,7 @@ public class ForecastLocation implements Parcelable
 {
 
         private static final String TAG = "";
+        private final int TIMEOUT = 5000;  //number of milliseconds
         
         // http://developer.weatherbug.com/docs/read/WeatherBug_API_JSON
         // NOTE:  See example JSON in doc folder.
@@ -62,8 +65,14 @@ public class ForecastLocation implements Parcelable
 
                         try
                         {
+                        	
                         	URL url = new URL(String.format(_URL, params[0]));
-                        	InputStreamReader reader = new InputStreamReader( url.openStream());
+                        	URLConnection connection = url.openConnection();
+                        	connection.setConnectTimeout(TIMEOUT);
+                        	connection.setReadTimeout(TIMEOUT);
+                        	InputStreamReader reader = new InputStreamReader(connection.getInputStream());
+                        	
+                        	//InputStreamReader reader = new InputStreamReader( url.openStream());
                         	JsonReader jsonReader = new JsonReader(reader);
                         	jsonReader.beginObject();
                         	
@@ -113,6 +122,12 @@ public class ForecastLocation implements Parcelable
                         catch (IllegalStateException e)
                         {
                                 Log.e(TAG, e.toString() + params[0]);
+                        }
+                        catch(SocketTimeoutException e)
+                        {
+                        	Log.e(TAG, e.toString());
+                        	Log.e(TAG, "More than " + String.valueOf(TIMEOUT) + " milliseconds passed in getting the location." );
+                        	return null;
                         }
                         catch (Exception e)
                         {
