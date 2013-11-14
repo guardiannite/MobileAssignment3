@@ -29,11 +29,12 @@ public class MainActivity extends Activity{
             if (_fragmentForecast == null)
             {
             	_fragmentForecast = new FragmentForecast();
+            	showForecast("57701");
             }
             
             //_fragmentManager.beginTransaction().replace(R.id.fragmentContainerFrame, _fragmentForecast, FRAGMENT_FORECAST_TAG ).commit();
             
-            showForecast("57701");
+            
             
     }
 

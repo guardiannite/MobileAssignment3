@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -61,12 +62,19 @@ public class Forecast implements Parcelable
 
         private Forecast(Parcel parcel)
         {
+        	Log.d(TAG, "HIT 1");
                 Image = parcel.readParcelable(Bitmap.class.getClassLoader());
+                Log.d(TAG, "HIT 2");
                 _chancePrecip = parcel.readString();
+                Log.d(TAG, "HIT 3");
                 _feelsLike = parcel.readString();
+                Log.d(TAG, "HIT 4");
                 _humidity = parcel.readString();
+                Log.d(TAG, "HIT 5");
                 _temperature = parcel.readString();
-                //TODO: Add time
+                Log.d(TAG, "HIT 6");
+                _time = parcel.readString();
+                Log.d(TAG, "HIT 7");
         }
 
         @Override
@@ -83,7 +91,7 @@ public class Forecast implements Parcelable
                 dest.writeString(_feelsLike);
                 dest.writeString(_humidity);
                 dest.writeString(_temperature);
-                //TODO: dest.writeString(_time);
+                dest.writeString(_time);
         }
 
         public static final Parcelable.Creator<Forecast> Creator = new Parcelable.Creator<Forecast>()
@@ -198,35 +206,42 @@ public class Forecast implements Parcelable
                         			}
                         			else if(name.equals(CHANCE_PRECIP))
                         			{
-                        				forecast.setChancePrecip( jsonReader.nextString() );
-                        				Log.d(TAG, "Chance of precipitation: " + forecast.getChancePrecip() + "%");
+                        				forecast.setChancePrecip( jsonReader.nextString() + "%");
+                        				Log.d(TAG, "Chance of precipitation: " + forecast.getChancePrecip() );
                         			}
                         			else if(name.equals(FEELS_LIKE))
                         			{
-                        				forecast.setFeelsLike( jsonReader.nextString() );
-                        				Log.d(TAG, "Feels like " + forecast.getFeelsLike() + "F");
+                        				forecast.setFeelsLike( jsonReader.nextString() + "F");
+                        				Log.d(TAG, "Feels like " + forecast.getFeelsLike() );
                         			}
                         			else if(name.equals(HUMIDITY))
                         			{
-                        				forecast.setHumidity( jsonReader.nextString() );
-                        				Log.d(TAG, "Humidity " + forecast.getHumidity() + "%");
+                        				forecast.setHumidity( jsonReader.nextString() + "%");
+                        				Log.d(TAG, "Humidity " + forecast.getHumidity() );
                         			}
                         			else if(name.equals(TEMPERATURE))
                         			{
-                        				forecast.setTemperature( jsonReader.nextString() );
-                        				Log.d(TAG, "Temperature " + forecast.getTemperature() + "F");
+                        				forecast.setTemperature( jsonReader.nextString() + "F");
+                        				Log.d(TAG, "Temperature " + forecast.getTemperature() );
                         			}
                         			else if(name.equals(DATE_TIME))
                         			{
-                        				Date date = new Date();
-                        				//date.setTime(jsonReader.nextLong());
-                        				//Calendar.HOUR_OF_DAY
-                        				long value = jsonReader.nextLong();
-                        				date.setTime(value);
-                        				//_time = date.getHours();
-                        				Log.d(TAG, "Time: " + value);
-                        				Log.d(TAG, "Time: " + date.getTime());
-                        				Log.d(TAG, "Time: " + date.getHours());
+                        				long localZipCodeTime = jsonReader.nextLong();
+                        				//long currentGMT =  Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis();
+                        				//long offsetHour = (currentGMT - unixTime)/3600000;
+                        				//Log.d(TAG, "UnixTime: " + String.valueOf(unixTime));
+                        				//Log.d(TAG, "GMT: " + String.valueOf( currentGMT ) );
+                        				//Log.d(TAG, "Offset: " + String.valueOf(offsetHour));
+                        				//TimeZone timezoneOffset = TimeZone.getTimeZone("GMT+" + String.valueOf(offsetHour));
+                        				//Log.d(TAG, "TimeZone with offset: " + timezoneOffset.getDisplayName());
+                        				long localDeviceTime = Calendar.getInstance().getTimeInMillis();
+                        				
+                        				TimeZone timezone = Calendar.getInstance().getTimeZone();
+                        				Log.d(TAG, "Timezone: " + timezone.getDisplayName());
+                        				Log.d(TAG, "Current device time: " + new SimpleDateFormat(" MMM d 'at' hh:mm a").format(localDeviceTime));
+                        				forecast.setTime( new SimpleDateFormat(" MMM d 'at' hh:mm a").format(localZipCodeTime) );
+
+                        				Log.d(TAG, "Time: " + forecast.getTime());
                         			}
                         			else if(name.equals(ICON))
                         			{
