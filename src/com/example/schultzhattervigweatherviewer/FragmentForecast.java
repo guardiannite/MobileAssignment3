@@ -1,8 +1,13 @@
 package com.example.schultzhattervigweatherviewer;
 
+import java.util.concurrent.TimeUnit;
+
 import com.example.schultzhattervigweatherviewer.Forecast.LoadForecast;
 
 import android.app.Fragment;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -46,24 +51,33 @@ public class FragmentForecast extends Fragment implements IListeners
                 String locationZipCode = bundle.getString(LOCATION_KEY);
                 
                 _currentForecast = null;
+                _currentLocation = null;
                 
-                if(argumentsBundle == null)
-                {
-                //Make async call to forecast
-                Forecast forecast = new Forecast();
-                Forecast.LoadForecast loadedForecast = forecast.new LoadForecast(getActivity(), this);
-                loadedForecast.execute(forecastZipCode);
-                
-                //Make async call to location
-                ForecastLocation location = new ForecastLocation();
-                ForecastLocation.LoadLocation loadedLocation = location.new LoadLocation(getActivity(), this);
-                loadedLocation.execute(locationZipCode);
-                }
-                else
+                if(argumentsBundle != null)
                 {
                 	_currentForecast = (Forecast)argumentsBundle.getParcelable(SAVED_FORECAST);
                 	_currentLocation = (ForecastLocation)argumentsBundle.getParcelable(SAVED_LOCATION);
-                	//_textViewTemperature.setText( _currentForecast.getTemperature() );
+                }
+                if(_currentForecast == null || _currentLocation == null)
+                {
+                	if(isNetworkAvailable())
+                	{
+	                //Make async call to forecast
+	                Forecast forecast = new Forecast();
+	                Forecast.LoadForecast loadedForecast = forecast.new LoadForecast(getActivity(), this);
+					loadedForecast.execute(forecastZipCode);
+	                
+	                
+	                //Make async call to location
+	                ForecastLocation location = new ForecastLocation();
+	                ForecastLocation.LoadLocation loadedLocation = location.new LoadLocation(getActivity(), this);
+	                loadedLocation.execute(locationZipCode);
+                	}
+                	else
+                	{
+                		//Display Toast
+                		Log.d(TAG, "NETWORK UNAVAILABLE!!!");
+                	}
                 }
         }
 
@@ -71,9 +85,8 @@ public class FragmentForecast extends Fragment implements IListeners
         public void onSaveInstanceState(Bundle savedInstanceStateBundle)
         {
                 super.onSaveInstanceState(savedInstanceStateBundle);
-                Log.d(TAG, "Hit 100");
+
                 savedInstanceStateBundle.putParcelable(SAVED_FORECAST, _currentForecast);
-                Log.d(TAG, "Hit 101");
                 savedInstanceStateBundle.putParcelable(SAVED_LOCATION, _currentLocation);
                 
                 
@@ -103,13 +116,12 @@ public class FragmentForecast extends Fragment implements IListeners
         public void onActivityCreated(Bundle savedInstanceStateBundle)
         {
                 super.onActivityCreated(savedInstanceStateBundle);
-                Log.d(TAG, "HIT 200");
+
                 if(savedInstanceStateBundle != null)
                 {
                 	_currentForecast = (Forecast)savedInstanceStateBundle.getParcelable(SAVED_FORECAST);
                 	_currentLocation = (ForecastLocation)savedInstanceStateBundle.getParcelable(SAVED_LOCATION);
                 }
-                Log.d(TAG, "HIT 201");
         }
         
         @Override
@@ -122,29 +134,32 @@ public class FragmentForecast extends Fragment implements IListeners
 		@Override
 		public void onLocationLoaded(ForecastLocation forecastLocation) 
 		{
-			_currentLocation = forecastLocation;
-			//_textViewLocation.setText(forecastLocation.City + " "  + forecastLocation.State);
-			updateDisplay();
+			if(forecastLocation == null)
+			{
+				//Do toast
+				Log.d(TAG, "Forecast location was returned as null");	  //aka the call timed out
+			}
+			else
+			{
+				_currentLocation = forecastLocation;
+				updateDisplay();
+			}
 		}
 
 		@Override
 		public void onForecastLoaded(Forecast forecast) 
 		{
-			_currentForecast = forecast;
-			updateDisplay();
-			/*
-			_progressBar.setVisibility(View.INVISIBLE);
-			_textViewProgress.setVisibility(View.INVISIBLE);
 			
-        	_textViewChanceOfPrecip.setText( forecast.getChancePrecip() );
-        	_textViewFeelsLike.setText( forecast.getFeelsLike() );
-        	_textViewHumidity.setText( forecast.getHumidity() );
-        	_textViewTemperature.setText( forecast.getTemperature() );
-        	_textViewTime.setText(forecast.getTime());
-        	
-        	_imageView.setImageBitmap(forecast.Image);
-        	*/
-			
+			if(forecast == null)
+			{
+				//Do toast
+				Log.d(TAG, "Forecast was returned as null");  //aka the call timed out
+			}
+			else
+			{
+				_currentForecast = forecast;
+				updateDisplay();
+			}
 		}
 		
 		private void updateDisplay()
@@ -167,5 +182,13 @@ public class FragmentForecast extends Fragment implements IListeners
         	
         	_textViewLocation.setText(_currentLocation.City + " "  + _currentLocation.State);
 		}
+		
+        private boolean isNetworkAvailable() 
+        {
+            ConnectivityManager connectivityManager 
+                  = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+            return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+        }
 
 }
