@@ -9,10 +9,12 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.JsonReader;
 import android.util.Log;
 
-public class ForecastLocation
+public class ForecastLocation implements Parcelable
 {
 
         private static final String TAG = "";
@@ -29,6 +31,14 @@ public class ForecastLocation
                 City = null;
                 State = null;
                 Country = null;
+        }
+        
+        public ForecastLocation(Parcel parcel)
+        {
+        	ZipCode = parcel.readString();
+        	City = parcel.readString();
+        	State = parcel.readString();
+        	Country = parcel.readString();
         }
 
         
@@ -123,4 +133,34 @@ public class ForecastLocation
         public String City;
         public String State;
         public String Country;
+
+
+		@Override
+		public int describeContents() 
+		{
+			return 0;
+		}
+		@Override
+		public void writeToParcel(Parcel dest, int flags) 
+		{
+			dest.writeString(ZipCode);
+			dest.writeString(City);
+			dest.writeString(State);
+			dest.writeString(Country);
+		}
+		
+        public static final Parcelable.Creator<ForecastLocation> Creator = new Parcelable.Creator<ForecastLocation>()
+        {
+                @Override
+                public ForecastLocation createFromParcel(Parcel pc)
+                {
+                        return new ForecastLocation(pc);
+                }
+                
+                @Override
+                public ForecastLocation[] newArray(int size)
+                {
+                        return new ForecastLocation[size];
+                }
+        };
 }

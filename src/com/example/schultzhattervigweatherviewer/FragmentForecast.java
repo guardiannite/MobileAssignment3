@@ -18,10 +18,12 @@ public class FragmentForecast extends Fragment implements IListeners
         public static final String LOCATION_KEY = "key_location";
         public static final String FORECAST_KEY = "key_forecast";
         
+        public final String SAVED_LOCATION = "saved_location_key";
         public final String SAVED_FORECAST ="saved_forecast_key";
         public final String TAG = "Forecast Fragment";
         
         private Forecast _currentForecast;
+        private ForecastLocation _currentLocation;
        
         
         private TextView _textViewLocation;
@@ -60,6 +62,7 @@ public class FragmentForecast extends Fragment implements IListeners
                 else
                 {
                 	_currentForecast = (Forecast)argumentsBundle.getParcelable(SAVED_FORECAST);
+                	_currentLocation = (ForecastLocation)argumentsBundle.getParcelable(SAVED_LOCATION);
                 	//_textViewTemperature.setText( _currentForecast.getTemperature() );
                 }
         }
@@ -71,6 +74,7 @@ public class FragmentForecast extends Fragment implements IListeners
                 Log.d(TAG, "Hit 100");
                 savedInstanceStateBundle.putParcelable(SAVED_FORECAST, _currentForecast);
                 Log.d(TAG, "Hit 101");
+                savedInstanceStateBundle.putParcelable(SAVED_LOCATION, _currentLocation);
                 
                 
         }
@@ -103,6 +107,7 @@ public class FragmentForecast extends Fragment implements IListeners
                 if(savedInstanceStateBundle != null)
                 {
                 	_currentForecast = (Forecast)savedInstanceStateBundle.getParcelable(SAVED_FORECAST);
+                	_currentLocation = (ForecastLocation)savedInstanceStateBundle.getParcelable(SAVED_LOCATION);
                 }
                 Log.d(TAG, "HIT 201");
         }
@@ -117,7 +122,9 @@ public class FragmentForecast extends Fragment implements IListeners
 		@Override
 		public void onLocationLoaded(ForecastLocation forecastLocation) 
 		{
-			_textViewLocation.setText(forecastLocation.City + " "  + forecastLocation.State);
+			_currentLocation = forecastLocation;
+			//_textViewLocation.setText(forecastLocation.City + " "  + forecastLocation.State);
+			updateDisplay();
 		}
 
 		@Override
@@ -142,7 +149,7 @@ public class FragmentForecast extends Fragment implements IListeners
 		
 		private void updateDisplay()
 		{
-			if(_currentForecast == null)
+			if(_currentForecast == null || _currentLocation == null)
 			{
 				return;
 			}
@@ -157,6 +164,8 @@ public class FragmentForecast extends Fragment implements IListeners
         	_textViewTime.setText(_currentForecast.getTime());
         	
         	_imageView.setImageBitmap(_currentForecast.Image);
+        	
+        	_textViewLocation.setText(_currentLocation.City + " "  + _currentLocation.State);
 		}
 
 }

@@ -64,17 +64,11 @@ public class Forecast implements Parcelable
         {
         	Log.d(TAG, "HIT 1");
                 Image = parcel.readParcelable(Bitmap.class.getClassLoader());
-                Log.d(TAG, "HIT 2");
                 _chancePrecip = parcel.readString();
-                Log.d(TAG, "HIT 3");
                 _feelsLike = parcel.readString();
-                Log.d(TAG, "HIT 4");
                 _humidity = parcel.readString();
-                Log.d(TAG, "HIT 5");
                 _temperature = parcel.readString();
-                Log.d(TAG, "HIT 6");
                 _time = parcel.readString();
-                Log.d(TAG, "HIT 7");
         }
 
         @Override
