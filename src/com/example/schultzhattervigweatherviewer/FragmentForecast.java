@@ -9,6 +9,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,7 @@ import android.webkit.WebView.FindListener;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class FragmentForecast extends Fragment implements IListeners
 {
@@ -40,6 +42,7 @@ public class FragmentForecast extends Fragment implements IListeners
         private ImageView _imageView;
         private ProgressBar _progressBar;
         private TextView _textViewProgress;
+        
 
         @Override
         public void onCreate(Bundle argumentsBundle)
@@ -76,12 +79,15 @@ public class FragmentForecast extends Fragment implements IListeners
                 	else
                 	{
                 		//Display Toast
+                		Context context = getActivity();
+                		Toast.makeText(context, "Network Unavailable", Toast.LENGTH_LONG).show();
+                		
                 		Log.d(TAG, "NETWORK UNAVAILABLE!!!");
                 	}
                 }
         }
 
-        @Override
+		@Override
         public void onSaveInstanceState(Bundle savedInstanceStateBundle)
         {
                 super.onSaveInstanceState(savedInstanceStateBundle);
