@@ -15,6 +15,7 @@ public class MainActivity extends Activity{
 	private FragmentManager _fragmentManager;
 	private FragmentForecast _fragmentForecast;
 	private final String FRAGMENT_FORECAST_TAG = "ForecastTag";
+	private final String ZIP_CODE = "57701";
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -29,7 +30,7 @@ public class MainActivity extends Activity{
             if (_fragmentForecast == null)
             {
             	_fragmentForecast = new FragmentForecast();
-            	showForecast("57701");
+            	showForecast(ZIP_CODE);
             }
             
             //_fragmentManager.beginTransaction().replace(R.id.fragmentContainerFrame, _fragmentForecast, FRAGMENT_FORECAST_TAG ).commit();
@@ -42,7 +43,7 @@ public class MainActivity extends Activity{
     {    	
     	Bundle bundle = new Bundle();
     	bundle.putString(FragmentForecast.FORECAST_KEY, zipCode);
-    	bundle.putString(_fragmentForecast.LOCATION_KEY, zipCode);
+    	bundle.putString(FragmentForecast.LOCATION_KEY, zipCode);
     	
         _fragmentForecast.setArguments(bundle);  //Must set arguments before fragmentManager.beginTransaction()
         

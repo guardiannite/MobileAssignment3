@@ -6,6 +6,7 @@ import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.UnknownHostException;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -127,6 +128,12 @@ public class ForecastLocation implements Parcelable
                         {
                         	Log.e(TAG, e.toString());
                         	Log.e(TAG, "More than " + String.valueOf(TIMEOUT) + " milliseconds passed in getting the location." );
+                        	return null;
+                        }
+                        catch (UnknownHostException e)
+                        {
+                        	Log.e(TAG, e.toString());
+                        	Log.e(TAG, "Failed to reach api web server in getting the location.");
                         	return null;
                         }
                         catch (Exception e)

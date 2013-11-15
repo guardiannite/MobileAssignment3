@@ -6,6 +6,7 @@ import com.example.schultzhattervigweatherviewer.Forecast.LoadForecast;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -113,7 +114,10 @@ public class FragmentForecast extends Fragment implements IListeners
                 _progressBar = (ProgressBar)rootView.findViewById(R.id.progressBar);
                 _textViewProgress = (TextView)rootView.findViewById(R.id.textViewProgressBar);
                 
-                updateDisplay();
+                if(_currentForecast != null && _currentLocation != null)
+                {
+                	updateDisplay(true);
+                }
                 
                 return rootView;
         }
@@ -143,12 +147,15 @@ public class FragmentForecast extends Fragment implements IListeners
 			if(forecastLocation == null)
 			{
 				//Do toast
+        		Context context = getActivity();
+        		Toast.makeText(context, "Timeout on webcall", Toast.LENGTH_LONG).show();
 				Log.d(TAG, "Forecast location was returned as null");	  //aka the call timed out
+				updateDisplay(false);
 			}
 			else
 			{
 				_currentLocation = forecastLocation;
-				updateDisplay();
+				updateDisplay(true);
 			}
 		}
 
@@ -159,17 +166,41 @@ public class FragmentForecast extends Fragment implements IListeners
 			if(forecast == null)
 			{
 				//Do toast
+        		Context context = getActivity();
+        		Toast.makeText(context, "Timeout on webcall", Toast.LENGTH_LONG).show();
 				Log.d(TAG, "Forecast was returned as null");  //aka the call timed out
+				updateDisplay(false);
 			}
 			else
 			{
 				_currentForecast = forecast;
-				updateDisplay();
+				updateDisplay(true);
 			}
 		}
 		
-		private void updateDisplay()
-		{
+		private void updateDisplay(boolean receivedForecast)
+		{		
+
+			
+			
+			if(!receivedForecast)
+			{
+				_progressBar.setVisibility(View.INVISIBLE);
+				_textViewProgress.setVisibility(View.INVISIBLE);
+				
+	        	_textViewChanceOfPrecip.setText( R.string.unavailable_message );
+	        	_textViewFeelsLike.setText( R.string.unavailable_message );
+	        	_textViewHumidity.setText( R.string.unavailable_message );
+	        	_textViewTemperature.setText(R.string.unavailable_message );
+	        	_textViewTime.setText( R.string.unavailable_message );
+	        	
+	        	_textViewLocation.setText( R.string.unavailable_message );
+	        	
+	        	_imageView.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.unavailable));
+	        	
+	        	return;
+			}
+			
 			if(_currentForecast == null || _currentLocation == null)
 			{
 				return;

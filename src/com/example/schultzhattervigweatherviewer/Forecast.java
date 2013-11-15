@@ -8,11 +8,13 @@ import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.concurrent.TimeoutException;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -217,7 +219,7 @@ public class Forecast implements Parcelable
                         			}
                         			else if(name.equals(FEELS_LIKE))
                         			{
-                        				forecast.setFeelsLike( jsonReader.nextString() + "F");
+                        				forecast.setFeelsLike( jsonReader.nextString() + (char) 0x00B0 + "F");
                         				Log.d(TAG, "Feels like " + forecast.getFeelsLike() );
                         			}
                         			else if(name.equals(HUMIDITY))
@@ -227,7 +229,7 @@ public class Forecast implements Parcelable
                         			}
                         			else if(name.equals(TEMPERATURE))
                         			{
-                        				forecast.setTemperature( jsonReader.nextString() + "F");
+                        				forecast.setTemperature( jsonReader.nextString() + (char) 0x00B0 + "F");
                         				Log.d(TAG, "Temperature " + forecast.getTemperature() );
                         			}
                         			else if(name.equals(DATE_TIME))
@@ -279,6 +281,12 @@ public class Forecast implements Parcelable
                         	Log.e(TAG, "More than " + String.valueOf(TIMEOUT) + " milliseconds passed in getting the forecast.");
                         	return null;
                         }
+                        catch (UnknownHostException e)
+                        {
+                        	Log.e(TAG, e.toString());
+                        	Log.e(TAG, "Failed to reach api web server in getting the forecast.");
+                        	return null;
+                        }
                         catch (Exception e)
                         {
                                 Log.e(TAG, e.toString());
@@ -300,6 +308,9 @@ public class Forecast implements Parcelable
                         try
                         {
                                 URL weatherURL = new URL(String.format(_imageURL, conditionString));
+                            	URLConnection connection = weatherURL.openConnection();
+                            	connection.setConnectTimeout(TIMEOUT);
+                            	connection.setReadTimeout(TIMEOUT);
 
                                 BitmapFactory.Options options = new BitmapFactory.Options();
                                 if (bitmapSampleSize != -1)
@@ -311,11 +322,21 @@ public class Forecast implements Parcelable
                                         options.inSampleSize = bitmapSampleSize;
                                 }
 
-                                iconBitmap = BitmapFactory.decodeStream(weatherURL.openStream(), null, options);
+                                iconBitmap = BitmapFactory.decodeStream(connection.getInputStream(), null, options);
                         }
                         catch (MalformedURLException e)
                         {
                                 Log.e(TAG, e.toString());
+                        }
+                        catch (SocketTimeoutException e)
+                        {
+                            	Log.e(TAG, e.toString());
+                            	Log.e(TAG, "More than " + String.valueOf(TIMEOUT) + " milliseconds passed in getting the forecast image.");
+                        }
+                        catch (UnknownHostException e)
+                        {
+                        	Log.e(TAG, e.toString());
+                        	Log.e(TAG, "Failed to reach api web server in getting the forecast image.");
                         }
                         catch (IOException e)
                         {
