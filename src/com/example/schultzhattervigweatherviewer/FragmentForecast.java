@@ -21,6 +21,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
+
 public class FragmentForecast extends Fragment implements IListeners
 {
         public static final String LOCATION_KEY = "key_location";
@@ -32,7 +34,10 @@ public class FragmentForecast extends Fragment implements IListeners
         
         private Forecast _currentForecast;
         private ForecastLocation _currentLocation;
-       
+        
+        private String _forecastZipCode;
+        private String _locationZipCode;
+        
         
         private TextView _textViewLocation;
         private TextView _textViewChanceOfPrecip;
@@ -50,10 +55,6 @@ public class FragmentForecast extends Fragment implements IListeners
         {
                 super.onCreate(argumentsBundle);
                 
-                Bundle bundle = this.getArguments();
-                String forecastZipCode = bundle.getString(FORECAST_KEY);
-                String locationZipCode = bundle.getString(LOCATION_KEY);
-                
                 _currentForecast = null;
                 _currentLocation = null;
                 
@@ -62,30 +63,10 @@ public class FragmentForecast extends Fragment implements IListeners
                 	_currentForecast = (Forecast)argumentsBundle.getParcelable(SAVED_FORECAST);
                 	_currentLocation = (ForecastLocation)argumentsBundle.getParcelable(SAVED_LOCATION);
                 }
-                if(_currentForecast == null || _currentLocation == null)
-                {
-                	if(isNetworkAvailable())
-                	{
-	                //Make async call to forecast
-	                Forecast forecast = new Forecast();
-	                Forecast.LoadForecast loadedForecast = forecast.new LoadForecast(getActivity(), this);
-					loadedForecast.execute(forecastZipCode);
-	                
-	                
-	                //Make async call to location
-	                ForecastLocation location = new ForecastLocation();
-	                ForecastLocation.LoadLocation loadedLocation = location.new LoadLocation(getActivity(), this);
-	                loadedLocation.execute(locationZipCode);
-                	}
-                	else
-                	{
-                		//Display Toast
-                		Context context = getActivity();
-                		Toast.makeText(context, "Network Unavailable", Toast.LENGTH_LONG).show();
-                		
-                		Log.d(TAG, "NETWORK UNAVAILABLE!!!");
-                	}
-                }
+                
+                Bundle bundle = this.getArguments();
+                _forecastZipCode = bundle.getString(FORECAST_KEY);
+                _locationZipCode = bundle.getString(LOCATION_KEY);
         }
 
 		@Override
@@ -94,9 +75,7 @@ public class FragmentForecast extends Fragment implements IListeners
                 super.onSaveInstanceState(savedInstanceStateBundle);
 
                 savedInstanceStateBundle.putParcelable(SAVED_FORECAST, _currentForecast);
-                savedInstanceStateBundle.putParcelable(SAVED_LOCATION, _currentLocation);
-                
-                
+                savedInstanceStateBundle.putParcelable(SAVED_LOCATION, _currentLocation);        
         }
 
         @Override
@@ -114,14 +93,18 @@ public class FragmentForecast extends Fragment implements IListeners
                 _progressBar = (ProgressBar)rootView.findViewById(R.id.progressBar);
                 _textViewProgress = (TextView)rootView.findViewById(R.id.textViewProgressBar);
                 
-                if(_currentForecast != null && _currentLocation != null)
-                {
-                	updateDisplay(true);
-                }
-                
                 return rootView;
         }
 
+        
+        @Override
+        public void onResume()
+        {
+        	super.onResume();
+        	
+        	refreshForecast();
+        }
+        
         @Override
         public void onActivityCreated(Bundle savedInstanceStateBundle)
         {
@@ -134,11 +117,7 @@ public class FragmentForecast extends Fragment implements IListeners
                 }
         }
         
-        @Override
-        public void onDestroy()
-        {             
-                super.onDestroy();
-        }
+
         
 
 		@Override
@@ -150,11 +129,13 @@ public class FragmentForecast extends Fragment implements IListeners
         		Context context = getActivity();
         		Toast.makeText(context, "Timeout on webcall", Toast.LENGTH_LONG).show();
 				Log.d(TAG, "Forecast location was returned as null");	  //aka the call timed out
+				
 				updateDisplay(false);
 			}
 			else
 			{
 				_currentLocation = forecastLocation;
+				
 				updateDisplay(true);
 			}
 		}
@@ -169,20 +150,51 @@ public class FragmentForecast extends Fragment implements IListeners
         		Context context = getActivity();
         		Toast.makeText(context, "Timeout on webcall", Toast.LENGTH_LONG).show();
 				Log.d(TAG, "Forecast was returned as null");  //aka the call timed out
+				
 				updateDisplay(false);
 			}
 			else
 			{
 				_currentForecast = forecast;
+				
 				updateDisplay(true);
 			}
 		}
 		
+		private void refreshForecast()
+		{
+            if(_currentForecast == null || _currentLocation == null)
+            {
+            	if(isNetworkAvailable())
+            	{
+	                //Make async call to forecast
+	                Forecast forecast = new Forecast();
+	                Forecast.LoadForecast loadedForecast = forecast.new LoadForecast(getActivity(), this);
+					loadedForecast.execute(_forecastZipCode);
+                
+                
+	                //Make async call to location
+	                ForecastLocation location = new ForecastLocation();
+	                ForecastLocation.LoadLocation loadedLocation = location.new LoadLocation(getActivity(), this);
+	                loadedLocation.execute(_locationZipCode);
+            	}
+            	else
+            	{
+            		//Display Toast
+            		Context context = getActivity();
+            		Toast.makeText(context, "Network Unavailable", Toast.LENGTH_LONG).show();
+            		updateDisplay(false);
+            		Log.d(TAG, "NETWORK UNAVAILABLE!!!");
+            	}
+            }
+            else
+            {
+            	updateDisplay(true);
+            }
+		}
+		
 		private void updateDisplay(boolean receivedForecast)
 		{		
-
-			
-			
 			if(!receivedForecast)
 			{
 				_progressBar.setVisibility(View.INVISIBLE);
