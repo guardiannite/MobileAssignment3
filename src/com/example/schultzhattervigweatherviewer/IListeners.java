@@ -1,12 +1,14 @@
 package com.example.schultzhattervigweatherviewer;
 
 /**************************************************************************
- * Author:       Brian Butterfield
+ * <h2>Description:</h2>
+ * Interface used to handle getting the results from the
+ *     forecast and forecastLocation call.
+ * <p>
+ * <b>Date:</b><br>
+ * &nbsp &nbsp &nbsp &nbsp Novemeber 11, 2012
  * 
- * Date:         November 11, 2012
- * 
- * Description:  Interface used to handle getting the results from the
- *               forecast and forecastLocation call.
+ * @author Brian Butterfield  
  *************************************************************************/
 public interface IListeners
 {

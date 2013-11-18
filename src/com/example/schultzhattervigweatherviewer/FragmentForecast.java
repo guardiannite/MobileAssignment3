@@ -22,7 +22,25 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-
+/**************************************************************************
+ * <h2>Description:</h2>
+ * FragmentForecast is the fragment that displays all of the information
+ *     on screen after the API call has been made and returns values. If
+ *     API call fails this fragment sends a toast message indicating that
+ *     there was a connection problem.
+ * <p>
+ * <b>Date:</b><br>
+ * &nbsp &nbsp &nbsp &nbsp Novemeber 13, 2012
+ * <p>
+ * <b>Extends:</b><br>
+ * &nbsp &nbsp &nbsp &nbsp Fragment
+ * <p>
+ * <b>Implements:</b><br>
+ * &nbsp &nbsp &nbsp &nbsp IListeners
+ * 
+ * @author Josh Schultz
+ * @author Erik Hattervig                
+ *************************************************************************/
 public class FragmentForecast extends Fragment implements IListeners
 {
         public static final String LOCATION_KEY = "key_location";
@@ -32,13 +50,15 @@ public class FragmentForecast extends Fragment implements IListeners
         public final String SAVED_FORECAST ="saved_forecast_key";
         public final String TAG = "Forecast Fragment";
         
+        // The forecast that was returned by the API call
         private Forecast _currentForecast;
         private ForecastLocation _currentLocation;
         
+        // Strings containing the zipcode for the API call
         private String _forecastZipCode;
         private String _locationZipCode;
         
-        
+        // TextViews, ImageView, and ProgressBar for the fragment
         private TextView _textViewLocation;
         private TextView _textViewChanceOfPrecip;
         private TextView _textViewFeelsLike;
@@ -50,6 +70,17 @@ public class FragmentForecast extends Fragment implements IListeners
         private TextView _textViewProgress;
         
 
+        /**************************************************************************
+         * <h2>Description:</h2>
+         * OnCreate call, restores the state of the fragment from the
+         *     argumentsBundle, or calls the API call if the bundle is null
+         * <p>
+         * <b>Date:</b><br>
+         * &nbsp &nbsp &nbsp &nbsp Novemeber 13, 2012
+         * 
+         * @param argumentsBundle - bundle for restoring the fragment from an on
+         *                          destroy.
+         *************************************************************************/
         @Override
         public void onCreate(Bundle argumentsBundle)
         {
@@ -69,6 +100,16 @@ public class FragmentForecast extends Fragment implements IListeners
                 _locationZipCode = bundle.getString(LOCATION_KEY);
         }
 
+        /**************************************************************************
+         * <h2>Description:</h2>
+         * Override of the onSaveInstanceState. Saves _currentForecast and 
+         *     _currentLocation to the bundle.
+         * <p>
+         * <b>Date:</b><br>
+         * &nbsp &nbsp &nbsp &nbsp Novemeber 13, 2012
+         * 
+         * @param argumentsBundle[out] - bundle being saved
+         *************************************************************************/
 		@Override
         public void onSaveInstanceState(Bundle savedInstanceStateBundle)
         {
@@ -78,6 +119,22 @@ public class FragmentForecast extends Fragment implements IListeners
                 savedInstanceStateBundle.putParcelable(SAVED_LOCATION, _currentLocation);        
         }
 
+		/**************************************************************************
+         * <h2>Description:</h2>
+         * Override of the onCreateView. Creates the view and inflates it using the
+         *     LayoutInflater passed to it.
+         * <p>
+         * <b>Date:</b><br>
+         * &nbsp &nbsp &nbsp &nbsp Novemeber 13, 2012
+         * 
+         * @param inflater - The LayoutInflater being used to create the view
+         * @param container
+         * @param savedInstaceState
+         * 
+         * 
+         * @return View - The view being created
+         * 
+         *************************************************************************/
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
@@ -96,7 +153,14 @@ public class FragmentForecast extends Fragment implements IListeners
                 return rootView;
         }
 
-        
+        /**************************************************************************
+         * <h2>Description:</h2>
+         * Override of the onResume function. Refreshes the forecast.
+         * <p>
+         * <b>Date:</b><br>
+         * &nbsp &nbsp &nbsp &nbsp Novemeber 13, 2012
+         * 
+         *************************************************************************/
         @Override
         public void onResume()
         {
@@ -105,6 +169,18 @@ public class FragmentForecast extends Fragment implements IListeners
         	refreshForecast();
         }
         
+        
+        /**************************************************************************
+         * <h2>Description:</h2>
+         * Override of the onActivityCreated instance. If the bundle passed to it
+         *     is null, it adds _currentForecast and _currentLocation to it.
+         * <p>
+         * <b>Date:</b><br>
+         * &nbsp &nbsp &nbsp &nbsp Novemeber 13, 2012
+         * 
+         * @param savedInstanceStateBundle - bundle for recreating the Fragment.
+         * 
+         *************************************************************************/
         @Override
         public void onActivityCreated(Bundle savedInstanceStateBundle)
         {
@@ -119,7 +195,17 @@ public class FragmentForecast extends Fragment implements IListeners
         
 
         
-
+        /**************************************************************************
+         * <h2>Description:</h2>
+         * Handles updating the display. Shows toast if the forecastLocation is
+         *     null, otherwise it updates _currentLocation and updates the display.
+         * <p>
+         * <b>Date:</b><br>
+         * &nbsp &nbsp &nbsp &nbsp Novemeber 13, 2012
+         * 
+         * @param forecastLocation - The ForecastLocation being updated
+         * 
+         *************************************************************************/
 		@Override
 		public void onLocationLoaded(ForecastLocation forecastLocation) 
 		{
@@ -140,6 +226,18 @@ public class FragmentForecast extends Fragment implements IListeners
 			}
 		}
 
+		
+		/**************************************************************************
+         * <h2>Description:</h2>
+         * Handles updating the display. Shows toast if the forecastLocation is
+         *     null, otherwise it updates _currentLocation and updates the display.
+         * <p>
+         * <b>Date:</b><br>
+         * &nbsp &nbsp &nbsp &nbsp Novemeber 13, 2012
+         * 
+         * @param forecast - The Forecast being updated
+         * 
+         *************************************************************************/
 		@Override
 		public void onForecastLoaded(Forecast forecast) 
 		{
@@ -161,6 +259,17 @@ public class FragmentForecast extends Fragment implements IListeners
 			}
 		}
 		
+		
+		/**************************************************************************
+         * <h2>Description:</h2>
+         * Refreshes the Forecast. Calls an async task to receive the current
+         *     forecast from the web API call. If the network is not available,
+         *     this function displays toast.
+         * <p>
+         * <b>Date:</b><br>
+         * &nbsp &nbsp &nbsp &nbsp Novemeber 13, 2012
+         * 
+         *************************************************************************/
 		private void refreshForecast()
 		{
             if(_currentForecast == null || _currentLocation == null)
@@ -193,6 +302,19 @@ public class FragmentForecast extends Fragment implements IListeners
             }
 		}
 		
+		/**************************************************************************
+         * <h2>Description:</h2>
+         * This function updates the display if a forecast has been received. If a
+         *     forcast has not been received then the display is set to display
+         *     the unavailable_message string.
+         * <p>
+         * <b>Date:</b><br>
+         * &nbsp &nbsp &nbsp &nbsp Novemeber 13, 2012
+         * 
+         * @param receivedForecast - a boolean indicating whether a forecast has
+         *                           been receved or not.
+         * 
+         *************************************************************************/
 		private void updateDisplay(boolean receivedForecast)
 		{		
 			if(!receivedForecast)
@@ -232,6 +354,19 @@ public class FragmentForecast extends Fragment implements IListeners
         	_textViewLocation.setText(_currentLocation.City + " "  + _currentLocation.State);
 		}
 		
+		
+		/**************************************************************************
+         * <h2>Description:</h2>
+         * This function tests to see if there is a network available using a
+         *     ConnectivityManager
+         * <p>
+         * <b>Date:</b><br>
+         * &nbsp &nbsp &nbsp &nbsp Novemeber 13, 2012
+         * 
+         * @return true - the network is available <br>
+         *         false - the network is not available 
+         * 
+         *************************************************************************/
         private boolean isNetworkAvailable() 
         {
             ConnectivityManager connectivityManager 

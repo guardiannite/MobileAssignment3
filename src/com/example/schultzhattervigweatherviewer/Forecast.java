@@ -22,30 +22,38 @@ import android.util.JsonReader;
 import android.util.Log;
 
 /**************************************************************************
- * Author:       Josh Schultz & Erik Hattervig
+ * <h2>Description:</h2>
+ * Forecast makes an API call to get weather information for
+ * a zip code.  To use this class, users first must create
+ * the inner class object and run the ".execute(...)" method.
+ * Calling this method, the user must pass a 5 digit zip code
+ * in string format.  Doing this will return the forecast
+ * to the listener. <br>
+ * If the user wants, the class is a parcelable type and can
+ * be stored in bundles to prevent making the API call 
+ * repeatedly. <p>
+ * The information provided from the forecast is as follows:
+ * <ul>
+ * <li>temperature</li>
+ * <li>feels like temperature</li>
+ * <li>humidity</li>
+ * <li>Chance of precipitation</li>
+ * <li>icon representing the forecasted weather</li>
+ * <li>time of the forecast</li>
+ * </ul>
  * 
- * Date:         Novemeber 13, 2012
- * 
- * Extends:      (nothing)
- * 
- * Implements:   Parcelable
- *           
- * Description:  Forecast makes an API call to get weather information for
- *               a zip code.  To use this class, users first must create
- *               the inner class object and run the ".execute(...)" method.
- *               Calling this method, the user must pass a 5 digit zip code
- *               in string format.  Doing this will return the forecast
- *               to the listener.
- *               If the user wants, the class is a parcelable type and can
- *               be stored in bundles to prevent making the API call 
- *               repeatedly.  
- *               The information provided from the forecast is as follows:
- *                   temperature
- *                   feels like temperature
- *                   humidity
- *                   Chance of precipitation
- *                   icon representing the forecasted weather
- *                   time of the forecast
+ * <p>
+ * <b>Date:</b><br>
+ * &nbsp &nbsp &nbsp &nbsp Novemeber 13, 2012
+ * <p>
+ * <b>Extends:</b><br>
+ * &nbsp &nbsp &nbsp &nbsp (nothing)
+ * <p>
+ * <b>Implements:</b><br>
+ * &nbsp &nbsp &nbsp &nbsp Parcelable
+ *
+ * @author Josh Schultz
+ * @author Erik Hattervig
  *************************************************************************/
 public class Forecast implements Parcelable
 {
@@ -94,14 +102,15 @@ public class Forecast implements Parcelable
         
         
         /**************************************************************************
-         * Date:         November 11, 2012
+         * <h2>Description:</h2>
+         * &nbsp &nbsp &nbsp &nbsp Constructor.  Private members are initialized
+         * to null.
+         * <p>
+         * <b>Date:</b><br>
+         * &nbsp &nbsp &nbsp &nbsp November 11, 2012
          * 
-         * Description:  Constructor.  Private members are initialized to null.
-         * 
-         * Params:       (nothing)
-         * 
-         * Returns:      A Forecast object with all the private members initialized 
-         *               to null.
+         * @return A Forecast object with all the private members initialized to
+         * 			null.
          *************************************************************************/
         public Forecast()
         {
@@ -116,18 +125,20 @@ public class Forecast implements Parcelable
         
 
         /**************************************************************************
-         * Date:         November 13, 2012
+         * <h2>Description:</h2>
+         * Constructor.  Private members are set to the stored
+         * parcelable values. The parcelable values are stored in a
+         * queue fashion. writeToParcel() writes the values and this
+         * method reads the values.
+         * <p>
+         * <b>Date:</b><br>
+         * &nbsp &nbsp &nbsp &nbsp November 13, 2012
          * 
-         * Description:  Constructor.  Private members are set to the stored
-         *               parcelable values.  The parcelable values are stored in a
-         *               queue fashion.  writeToParcel() writes the values and this
-         *               method reads the values.
+         * @param parcel[in] - Contains the stored icon bitmap, and forecast
+         *                     information
          * 
-         * Params:       parcel[in] - Contains the stored icon bitmap, and forecast
-         *                            information
-         * 
-         * Returns:      A Forecast object with all the private members initialized 
-         *               to a saved state.
+         * @return A Forecast object with all the private members initialized 
+         *         to a saved state.
          *************************************************************************/
         private Forecast(Parcel parcel)
         {
@@ -142,14 +153,14 @@ public class Forecast implements Parcelable
         
 
         /**************************************************************************
-         * Date:         November 11, 2012
+         * <h2>Description:</h2>
+         * The documentation for this override is vague and hard to
+         *    understand.  Honestly we have no idea what this does.
+         * <p>
+         * <b>Date:</b><br>
+         * &nbsp &nbsp &nbsp &nbsp November 11, 2012 
          * 
-         * Description:  The documentation for this override is vague and hard to
-         *               understand.  Honestly we have no idea what this does.
-         * 
-         * Params:       (nothing)
-         * 
-         * Returns:      0  - Not entirely sure what this value means
+         * @return 0  - Not entirely sure what this value means     
          *************************************************************************/
         @Override
         public int describeContents()
@@ -160,16 +171,16 @@ public class Forecast implements Parcelable
        
         
         /**************************************************************************
-         * Date:         November 13, 2012
+         * <h2>Description:</h2>
+         * Stores the private members into a parcel which is meant to
+         *    be read later by the constructor.
+         * <p>
+         * <b>Date:</b><br>
+         * &nbsp &nbsp &nbsp &nbsp November 13, 2012
          * 
-         * Description:  Stores the private members into a parcel which is meant to
-         *               be read later by the constructor.
-         * 
-         * Params:       dest[out] - Location to store the private forecast members
-         *               flags[in] - Various flags to signal how the parcel should
+         * @param dest[out] - Location to store the private forecast members
+         * @param flags[in] - Various flags to signal how the parcel should
          *                           be stored.
-         * 
-         * Returns:      (nothing)
          *************************************************************************/
         @Override
         public void writeToParcel(Parcel dest, int flags)
@@ -185,15 +196,22 @@ public class Forecast implements Parcelable
         
 
         /**************************************************************************
-         * Date:         November 11, 2012
+         * <h2>Description:</h2>
+         * When this class is used as a parcelable, this method is
+         * used to call the parcel constructor.
+         * <p>
+         * <b>Date:</b><br>
+         * &nbsp &nbsp &nbsp &nbsp November 11, 2012
+         * <p>
+         * <b>Params:</b><br>
+         * &nbsp &nbsp &nbsp &nbsp (nothing)
+         * <p>
+         * <b>Returns:</b><br>
+         * &nbsp &nbsp &nbsp &nbsp Forecast - A new Forecast object instantiated
+         *   from existing parcels.
          * 
-         * Description:  When this class is used as a parcelable, this method is
-         *               used to call the parcel constructor.  
-         * 
-         * Params:       (nothing)
-         * 
-         * Returns:      Forecast - A new Forecast object instantiated from existing
-         *                          parcels.  
+         * @author Josh Schultz
+         * @author Erik Hattervig
          *************************************************************************/
         public static final Parcelable.Creator<Forecast> Creator = new Parcelable.Creator<Forecast>()
         {
@@ -213,13 +231,13 @@ public class Forecast implements Parcelable
         
         
         /**************************************************************************
-         * Date:         November 11, 2012
+         * <h2>Description:</h2>
+         * A getter for the private member _chancePrecip.
+         * <p>
+         * <b>Date:</b><br>
+         * &nbsp &nbsp &nbsp &nbsp November 11, 2012
          * 
-         * Description:  A getter for the private member _chancePrecip. 
-         * 
-         * Params:       (nothing)
-         * 
-         * Returns:      _chancePrecip - Chance of precipitation string
+         * @return _chancePrecip - Chance of precipitation string    
          *************************************************************************/
         public String getChancePrecip()
         {
@@ -233,8 +251,6 @@ public class Forecast implements Parcelable
          * 
          * Description:  A getter for the private member _feelsLike. 
          * 
-         * Params:       (nothing)
-         * 
          * Returns:      _feelsLike - Feels like temperature string
          *************************************************************************/
         public String getFeelsLike()
@@ -245,13 +261,13 @@ public class Forecast implements Parcelable
         
         
         /**************************************************************************
-         * Date:         November 11, 2012
+         * <h2>Description:</h2>
+         * A getter for the private member _humidity.
+         * <p>
+         * <b>Date:</b><br>
+         * &nbsp &nbsp &nbsp &nbsp November 11, 2012
          * 
-         * Description:  A getter for the private member _humidity. 
-         * 
-         * Params:       (nothing)
-         * 
-         * Returns:      _humidity - Humidity string
+         * @return _humidity - Humidity string     
          *************************************************************************/
         public String getHumidity()
         {
@@ -261,13 +277,13 @@ public class Forecast implements Parcelable
         
         
         /**************************************************************************
-         * Date:         November 11, 2012
+         * <h2>Description:</h2>
+         * A getter for the private member _temperature.
+         * <p>
+         * <b>Date:</b><br>
+         * &nbsp &nbsp &nbsp &nbsp November 11, 2012
          * 
-         * Description:  A getter for the private member _temperature. 
-         * 
-         * Params:       (nothing)
-         * 
-         * Returns:      _temperature - Temperature string
+         * @return _temperature - Temperature string    
          *************************************************************************/
         public String getTemperature()
         {
@@ -277,13 +293,13 @@ public class Forecast implements Parcelable
         
         
         /**************************************************************************
-         * Date:         November 11, 2012
+         * <h2>Description:</h2>
+         * A getter for the private member _time.
+         * <p>
+         * <b>Date:</b><br>
+         * &nbsp &nbsp &nbsp &nbsp November 11, 2012
          * 
-         * Description:  A getter for the private member _time. 
-         * 
-         * Params:       (nothing)
-         * 
-         * Returns:      _time - Time of forecast string
+         * @return _time - Time of forecast string    
          *************************************************************************/
         public String getTime()
         {
@@ -293,13 +309,13 @@ public class Forecast implements Parcelable
         
         
         /**************************************************************************
-         * Date:         November 11, 2012
+         * <h2>Description:</h2>
+         * A setter for the private member _chancePrecip. 
+         * <p>
+         * <b>Date:</b><br>
+         * &nbsp &nbsp &nbsp &nbsp November 11, 2012
          * 
-         * Description:  A setter for the private member _chancePrecip. 
-         * 
-         * Params:       chancePrecip - value used to set the private member
-         * 
-         * Returns:      (nothing)
+         * @param chancePrecip - value used to set the private member
          *************************************************************************/
         public void setChancePrecip(String chancePrecip)
         {
@@ -309,13 +325,13 @@ public class Forecast implements Parcelable
         
         
         /**************************************************************************
-         * Date:         November 11, 2012
-         * 
-         * Description:  A setter for the private member _feelsLike. 
-         * 
-         * Params:       feelsLike - value used to set the private member
-         * 
-         * Returns:      (nothing)
+         * <h2>Description:</h2>
+         * A setter for the private member _feelsLike.
+         * <p>
+         * <b>Date:</b><br>
+         * &nbsp &nbsp &nbsp &nbsp November 11, 2012
+         *          
+         * @param feelsLike - value used to set the private member
          *************************************************************************/
         public void setFeelsLike(String feelsLike)
         {
@@ -325,13 +341,13 @@ public class Forecast implements Parcelable
         
         
         /**************************************************************************
-         * Date:         November 11, 2012
+         * <h2>Description:</h2>
+         * A setter for the private member _humidity.
+         * <p>
+         * <b>Date:</b><br>
+         * &nbsp &nbsp &nbsp &nbsp November 11, 2012
          * 
-         * Description:  A setter for the private member _humidity. 
-         * 
-         * Params:       humidity - value used to set the private member
-         * 
-         * Returns:      (nothing)
+         * @param humidity - value used to set the private member
          *************************************************************************/
         public void setHumidity(String humidity)
         {
@@ -341,13 +357,13 @@ public class Forecast implements Parcelable
         
         
         /**************************************************************************
-         * Date:         November 11, 2012
+         * <h2>Description:</h2>
+         * A setter for the private member _temperature.
+         * <p>
+         * <b>Date:</b><br>
+         * &nbsp &nbsp &nbsp &nbsp November 11, 2012
          * 
-         * Description:  A setter for the private member _temperature. 
-         * 
-         * Params:       temperature - value used to set the private member
-         * 
-         * Returns:      (nothing)
+         * @param temperature - value used to set the private member
          *************************************************************************/
         public void setTemperature(String temperature)
         {
@@ -357,13 +373,13 @@ public class Forecast implements Parcelable
         
         
         /**************************************************************************
-         * Date:         November 11, 2012
+         * <h2>Description:</h2>
+         * A setter for the private member _time.
+         * <p>
+         * <b>Date:</b><br>
+         * &nbsp &nbsp &nbsp &nbsp November 11, 2012
          * 
-         * Description:  A setter for the private member _time. 
-         * 
-         * Params:       time - value used to set the private member
-         * 
-         * Returns:      (nothing)
+         * @param time - value used to set the private member    
          *************************************************************************/
         public void setTime(String time)
         {
@@ -376,20 +392,25 @@ public class Forecast implements Parcelable
         
         
         /**************************************************************************
-         * Author:       Josh Schultz & Erik Hattervig
-         * 
-         * Date:         Novemeber 11, 2012
-         * 
-         * Extends:      AsyncTask<String, Void, Forecast>
-         *                         String   -> Parameter
-         *                         Void     -> Progress
+         * <h2>Description:</h2>
+         * Makes the API call to grab the forecast information and
+         *    the icon.  The class uses .execute(zipCode) to call the
+         *    async task. 
+         * <p>
+         * <b>Date:</b><br>
+         * &nbsp &nbsp &nbsp &nbsp Novemeber 11, 2012
+         * <p>
+         * <b>Extends:</b><br>
+         * &nbsp &nbsp &nbsp &nbsp AsyncTask &#60;String, Void, Forecast&#62; <br>
+         *                         String   -> Parameter <br>
+         *                         Void     -> Progress <br>
          *                         Forecast -> Result
+         * <p>
+         * <b>Implements:</b><br>
+         * &nbsp &nbsp &nbsp &nbsp (nothing)
          * 
-         * Implements:   (nothing)
-         *           
-         * Description:  Makes the API call to grab the forecast information and
-         *               the icon.  The class uses .execute(zipCode) to call the
-         *               async task.  
+         * @author Josh Schultz
+         * @author Erik Hattervig
          *************************************************************************/
         public class LoadForecast extends AsyncTask<String, Void, Forecast>
         {
@@ -407,15 +428,17 @@ public class Forecast implements Parcelable
 
                 
                 /**************************************************************************
-                 * Date:         November 11, 2012
-                 * 
-                 * Description:  Constructor.  Sets up the listener which later will be used
+                 * <h2>Description:</h2>
+                 * Constructor.  Sets up the listener which later will be used
                  *               to notify when the async task is finished.
+                 * <p>
+                 * <b>Date:</b><br>
+                 * &nbsp &nbsp &nbsp &nbsp Novemeber 11, 2012
                  * 
-                 * Params:       context[in]  - The activity associated with this object
-                 *               listener[in] - The object listening for the result.
+                 * @param context[in]  - The activity associated with this object
+                 * @param listener[in] - The object listening for the result.
                  * 
-                 * Returns:      A LoadForecast object
+                 * @return A LoadForecast object   
                  *************************************************************************/
                 public LoadForecast(Context context, IListeners listener)
                 {
@@ -426,17 +449,19 @@ public class Forecast implements Parcelable
                 
                 
                 /**************************************************************************
-                 * Date:         November 11, 2012
+                 * <h2>Description:</h2>
+                 * The async portion of LoadForecast.  This method makes the
+                 *    API call for the forecast, parses the call, and returns
+                 *    a Forecast object.  If there is no network available, or
+                 *    the API call is unsuccessful, null is returned.
+                 * <p>
+                 * <b>Date:</b><br>
+                 * &nbsp &nbsp &nbsp &nbsp Novemeber 11, 2012
                  * 
-                 * Description:  The async portion of LoadForecast.  This method makes the
-                 *               API call for the forecast, parses the call, and returns
-                 *               a Forecast object.  If there is no network available, or
-                 *               the API call is unsuccessful, null is returned.
+                 * @param params[in] - The zip code for the API call.
                  * 
-                 * Params:       params[in] - The zip code for the API call.
-                 * 
-                 * Returns:      Forecast - The forecast information from the API call
-                 *               null     - If the API call failed.
+                 * @return Forecast - The forecast information from the API call
+                 * @return null     - If the API call failed.          
                  *************************************************************************/
                 protected Forecast doInBackground(String... params)
                 {
@@ -558,14 +583,14 @@ public class Forecast implements Parcelable
                 
                 
                 /**************************************************************************
-                 * Date:         November 11, 2012
+                 * <h2Description:</h2>
+                 * After the forecast is received, this method is automatically
+                 *    called to notify the listener.
+                 * <p>
+                 * <b>Date:</b><br>
+                 * &nbsp &nbsp &nbsp &nbsp Novemeber 11, 2012
                  * 
-                 * Description:  After the forecast is received, this method is automatically
-                 *               called to notify the listener.
-                 * 
-                 * Params:       forecast[in] - The result of the API call.
-                 * 
-                 * Returns:      (nothing)
+                 * @param forecast[in] - The result of the API call.
                  *************************************************************************/
                 @Override
                 protected void onPostExecute(Forecast forecast)
@@ -576,16 +601,18 @@ public class Forecast implements Parcelable
                 
                 
                 /**************************************************************************
-                 * Date:         November 11, 2012
+                 * <h2Description:</h2>
+                 * Written by Brian Butterfield, this method takes in an icon
+                 *     name and retrieves the bitmap for that name.  The method
+                 *     was modified to add a timeout period for the API call.
+                 * <p>
+                 * <b>Date:</b><br>
+                 * &nbsp &nbsp &nbsp &nbsp Novemeber 11, 2012
                  * 
-                 * Description:  Written by Brian Butterfield, this method takes in an icon
-                 *               name and retrieves the bitmap for that name.  The method
-                 *               was modified to add a timeout period for the API call.
+                 * @param conditionString  - Name of the icon
+                 * @param bitmapSampleSize - Value to scale the bitmap by
                  * 
-                 * Params:       conditionString  - Name of the icon
-                 *               bitmapSampleSize - Value to scale the bitmap by
-                 * 
-                 * Returns:      iconBitmp - The bitmap of the icon
+                 * @return iconBitmp - The bitmap of the icon 
                  *************************************************************************/
                 private Bitmap readIconBitmap(String conditionString, int bitmapSampleSize)
                 {

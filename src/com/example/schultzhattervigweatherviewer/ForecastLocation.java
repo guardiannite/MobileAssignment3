@@ -15,28 +15,37 @@ import android.util.Log;
 
 
 /**************************************************************************
- * Author:       Josh Schultz & Erik Hattervig
+ * <h2>Description:</h2>
+ * ForecastLocation makes an API call to get location information 
+ *     for a zip code.  To use this class, users first must create
+ *     the inner class object and run the ".execute(...)" method.
+ *     Calling this method, the user must pass a 5 digit zip code
+ *     in string format.  Doing this will return the forecast location
+ *     to the listener.<br>
+ *     If the user wants, the class is a parcelable type and can
+ *     be stored in bundles to prevent making the API call 
+ *     repeatedly.
+ *     <p>
+ *     The information provided from the forecast is as follows:
+ *     <ul>
+ *     <li>zip code</li>
+ *     <li>city</li>
+ *     <li>state</li>
+ *     <li>country</li>
+ *     </ul>
+ *     
+ * <p>
+ * <b>Date:</b><br>
+ * &nbsp &nbsp &nbsp &nbsp Novemeber 13, 2012
+ * <p>
+ * <b>Extends:</b><br>
+ * &nbsp &nbsp &nbsp &nbsp (nothing)
+ * <p>
+ * <b>Implements:</b><br>
+ * &nbsp &nbsp &nbsp &nbsp Parcelable
  * 
- * Date:         Novemeber 13, 2012
- * 
- * Extends:      (nothing)
- * 
- * Implements:   Parcelable
- *           
- * Description:  ForecastLocation makes an API call to get location information 
- *               for a zip code.  To use this class, users first must create
- *               the inner class object and run the ".execute(...)" method.
- *               Calling this method, the user must pass a 5 digit zip code
- *               in string format.  Doing this will return the forecast location
- *               to the listener.
- *               If the user wants, the class is a parcelable type and can
- *               be stored in bundles to prevent making the API call 
- *               repeatedly.  
- *               The information provided from the forecast is as follows:
- *                   zip code 
- *                   city
- *                   state
- *                   country
+ * @author Josh Schultz
+ * @author Erik Hattervig                
  *************************************************************************/
 public class ForecastLocation implements Parcelable
 {
@@ -61,14 +70,14 @@ public class ForecastLocation implements Parcelable
 	    
 	    
         /**************************************************************************
-         * Date:         November 11, 2012
+         * <h2>Description:</h2>
+         * Constructor.  Public members are initialized to null.
+         * <p>
+         * <b>Date:</b><br>
+         * &nbsp &nbsp &nbsp &nbsp Novemeber 13, 2012
          * 
-         * Description:  Constructor.  Public members are initialized to null.
-         * 
-         * Params:       (nothing)
-         * 
-         * Returns:      A Forecast Location object with all the private members 
-         *               initialized to null.
+         * @return A Forecast Location object with all the private members 
+         *             initialized to null.   
          *************************************************************************/
         public ForecastLocation()
         {
@@ -81,17 +90,19 @@ public class ForecastLocation implements Parcelable
         
         
         /**************************************************************************
-         * Date:         November 15, 2012
+         * <h2>Description:</h2>
+         * Constructor.  Public members are initialized to saved
+         *     parcel state.  The parcelable values are stored in a
+         *     queue fashion.  writeToParcel() writes the values and this
+         *     method reads the values.
+         * <p>
+         * <b>Date:</b><br>
+         * &nbsp &nbsp &nbsp &nbsp Novemeber 15, 2012
          * 
-         * Description:  Constructor.  Public members are initialized to saved
-         *               parcel state.  The parcelable values are stored in a
-         *               queue fashion.  writeToParcel() writes the values and this
-         *               method reads the values.
+         * @param parcel[in] - Saved values
          * 
-         * Params:       parcel[in] - Saved values
-         * 
-         * Returns:      A Forecast Location object with all the private members 
-         *               initialized to the saved state.
+         * @return A Forecast Location object with all the private members 
+         *             initialized to the saved state.
          *************************************************************************/
         public ForecastLocation(Parcel parcel)
         {
@@ -104,14 +115,14 @@ public class ForecastLocation implements Parcelable
         
        
         /**************************************************************************
-         * Date:         November 15, 2012
+         * <h2>Description:</h2>
+         * The documentation for this override is vague and hard to
+         *     understand.  Honestly we have no idea what this does.
+         * <p>
+         * <b>Date:</b><br>
+         * &nbsp &nbsp &nbsp &nbsp Novemeber 15, 2012
          * 
-         * Description:  The documentation for this override is vague and hard to
-         *               understand.  Honestly we have no idea what this does.
-         * 
-         * Params:       (nothing)
-         * 
-         * Returns:      0  - Not entirely sure what this value means
+         * @return 0  - Not entirely sure what this value means
          *************************************************************************/
 		@Override
 		public int describeContents() 
@@ -122,17 +133,17 @@ public class ForecastLocation implements Parcelable
 		
 		
         /**************************************************************************
-         * Date:         November 15, 2012
+         * <h2>Description:</h2>
+         * Stores the private members into a parcel which is meant to
+         *     be read later by the constructor.
+         * <p>
+         * <b>Date:</b><br>
+         * &nbsp &nbsp &nbsp &nbsp Novemeber 15, 2012
          * 
-         * Description:  Stores the private members into a parcel which is meant to
-         *               be read later by the constructor.
-         * 
-         * Params:       dest[out] - Location to store the private forecast location
-         *                           members
-         *               flags[in] - Various flags to signal how the parcel should
-         *                           be stored.
-         * 
-         * Returns:      (nothing)
+         * @param dest[out] - Location to store the private forecast location
+         *                    members
+         * @param flags[in] - Various flags to signal how the parcel should
+         *                    be stored.   
          *************************************************************************/
 		@Override
 		public void writeToParcel(Parcel dest, int flags) 
@@ -146,15 +157,20 @@ public class ForecastLocation implements Parcelable
 		
 		
         /**************************************************************************
-         * Date:         November 15, 2012
-         * 
-         * Description:  When this class is used as a parcelable, this method is
-         *               used to call the parcel constructor.  
-         * 
-         * Params:       (nothing)
-         * 
-         * Returns:      ForecastLocation - A new ForecastLocation object 
-         *                                  instantiated from existing parcels.  
+         * <h2>Description:</h2>
+         * When this class is used as a parcelable, this method is
+         *     used to call the parcel constructor.
+         * <p>
+         * <b>Date:</b><br>
+         * &nbsp &nbsp &nbsp &nbsp Novemeber 15, 2012
+         * <p>
+         * <b>Params:</b><br>
+         * &nbsp &nbsp &nbsp &nbsp (nothing)
+         * <p>
+         * <b>Returns:</b><br>
+         * &nbsp &nbsp &nbsp &nbsp ForecastLocation - A new ForecastLocation object 
+         *    instantiated from existing parcels.
+         *      
          *************************************************************************/
         public static final Parcelable.Creator<ForecastLocation> Creator = new Parcelable.Creator<ForecastLocation>()
         {
@@ -173,20 +189,27 @@ public class ForecastLocation implements Parcelable
         
         
         /**************************************************************************
-         * Author:       Josh Schultz & Erik Hattervig
+         * <h2>Description:</h2>
+         * Makes the API call to grab the forecast location
+         *     information.  The class uses .execute(zipCode) to call the
+         *     async task.
+         * <p>
+         * <b>Date:</b><br>
+         * &nbsp &nbsp &nbsp &nbsp Novemeber 11, 2012
+         * <p>
+         * <b>Extends:</b><br>
+         * &nbsp &nbsp &nbsp &nbsp 
+         * AsyncTaskS&#60;tring, Void, ForecastLocation&#62; <br>
+         * &nbsp &nbsp &nbsp &nbsp  String   -> Parameter <br>
+         * &nbsp &nbsp &nbsp &nbsp  Void     -> Progress <br>
+         * &nbsp &nbsp &nbsp &nbsp  ForecastLocation -> Result <br>
          * 
-         * Date:         Novemeber 11, 2012
+         * <p>
+         * <b>Implements:</b><br>
+         * &nbsp &nbsp &nbsp &nbsp (none)
          * 
-         * Extends:      AsyncTask<String, Void, ForecastLocation>
-         *                         String   -> Parameter
-         *                         Void     -> Progress
-         *                         ForecastLocation -> Result
-         * 
-         * Implements:   (nothing)
-         *           
-         * Description:  Makes the API call to grab the forecast location
-         *               information.  The class uses .execute(zipCode) to call the
-         *               async task.  
+         * @author Josh Schultz
+         * @author Erik Hattervig 
          *************************************************************************/
         public class LoadLocation extends AsyncTask<String, Void, ForecastLocation>
         {
@@ -196,15 +219,18 @@ public class ForecastLocation implements Parcelable
                 
                 
                 /**************************************************************************
-                 * Date:         November 11, 2012
+                 * <h2>Description:</h2>
+                 * Constructor.  Sets up the listener which later will be used
+                 *     to notify when the async task is finished.
+                 * <p>
+                 * <b>Date:</b><br>
+                 * &nbsp &nbsp &nbsp &nbsp Novemeber 11, 2012
+                 * <p>
                  * 
-                 * Description:  Constructor.  Sets up the listener which later will be used
-                 *               to notify when the async task is finished.
+                 * @param context[in]  - The activity associated with this object
+                 * @param listener[in] - The object listening for the result.
                  * 
-                 * Params:       context[in]  - The activity associated with this object
-                 *               listener[in] - The object listening for the result.
-                 * 
-                 * Returns:      A LoadLocation object
+                 * @return A LoadLocation object
                  *************************************************************************/
                 public LoadLocation(Context context, IListeners listener)
                 {
@@ -215,18 +241,21 @@ public class ForecastLocation implements Parcelable
                 
                 
                 /**************************************************************************
-                 * Date:         November 11, 2012
+                 * <h2>Description:</h2>
+                 * The async portion of LoadLocation.  This method makes the
+                 *     API call for the forecast location, parses the call, and 
+                 *     returns a ForecastLocation object.  If there is no network 
+                 *     available, or the API call is unsuccessful, null is returned.
+                 * <p>
+                 * <b>Date:</b><br>
+                 * &nbsp &nbsp &nbsp &nbsp Novemeber 11, 2012
+                 * <p>
                  * 
-                 * Description:  The async portion of LoadLocation.  This method makes the
-                 *               API call for the forecast location, parses the call, and 
-                 *               returns a ForecastLocation object.  If there is no network 
-                 *               available, or the API call is unsuccessful, null is returned.
+                 * @param params[in] - The zip code for the API call.
                  * 
-                 * Params:       params[in] - The zip code for the API call.
-                 * 
-                 * Returns:      ForecastLocation - The forecast location information from 
-                 *                                  the API call
-                 *               null             - If the API call failed.
+                 * @return ForecastLocation - The forecast location information from 
+                 *                            the API call <br>
+                 *         null             - If the API call failed.            
                  *************************************************************************/
                 protected ForecastLocation doInBackground(String... params)
                 {
@@ -326,14 +355,15 @@ public class ForecastLocation implements Parcelable
                 
                 
                 /**************************************************************************
-                 * Date:         November 11, 2012
+                 * <h2>Description:</h2>
+                 * After the forecast location is received, this method is
+                 *     automatically called to notify the listener.
+                 * <p>
+                 * <b>Date:</b><br>
+                 * &nbsp &nbsp &nbsp &nbsp Novemeber 11, 2012
+                 * <p>
                  * 
-                 * Description:  After the forecast location is received, this method is
-                 *               automatically called to notify the listener.
-                 * 
-                 * Params:       forecastLocation[in] - The result of the API call.
-                 * 
-                 * Returns:      (nothing)
+                 * @param forecastLocation[in] - The result of the API call.
                  *************************************************************************/
                 protected void onPostExecute(ForecastLocation forecastLocation)
                 {
